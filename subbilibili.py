@@ -27,14 +27,14 @@ class MainWindow(QMainWindow,Ui_MainWindow):
         #如果输入框的内容为空,就提示在这里输入链接
     def printLineEdit(self):
         url = self.lineEdit.text()
-        print(type(url))
+        #print(type(url))
         url = url.strip()
         file_path = QFileDialog.getExistingDirectory()
         #self.download(url,file_path)
         t = threading.Thread(target=self.download,args=(url,file_path))
         t.start()
-        while(not self.Downloading):
-            time.sleep(2)
+        time.sleep(2)
+        while(self.Downloading):
             if self.FilePathError:
                 self.FilePathError = False
                 #raise FileNotFoundError
