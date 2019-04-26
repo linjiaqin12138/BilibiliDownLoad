@@ -57,3 +57,4 @@ wordcloud = WordCloud(font_path="C:/WINDOWS/Fonts/SIMHEI.TTF",background_color="
 2. 实现对除av链接的视频下载外，还有bangumi等链接的视频下载
 3. 实现对除dash格式的视频下载
 4. 用pyinstaller等工具打包成exe可执行文件
+5. 程序图标和开启动画的制作
