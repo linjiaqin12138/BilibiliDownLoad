@@ -35,6 +35,7 @@ wordcloud = WordCloud(font_path="C:/WINDOWS/Fonts/SIMHEI.TTF",background_color="
 ```
 这一行进行修改
 * 建议下载视频长度为几分钟的视频，清晰度选低一点的，这样下载快一点。而且由于下载完之后还要进行音频和视频的融合，会比较满，**视频如果太大会很久**
+* 请别忘了设置保存路径
 
 ## 技术手段
 ### 界面
