@@ -44,7 +44,7 @@ class Ui_BilibiliVideoDownLoad(object):
         font.setPointSize(29)
         self.label.setFont(font)
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("../../../../Pictures/timg.jpeg"))
+        self.label.setPixmap(QtGui.QPixmap("./resources/timg.jpeg"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.layoutWidget = QtWidgets.QWidget(self.MainPage)
