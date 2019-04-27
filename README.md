@@ -51,6 +51,7 @@ wordcloud = WordCloud(font_path="C:/WINDOWS/Fonts/SIMHEI.TTF",background_color="
 
 ## 技术手段
 ### 界面
+![20%](./resources/ImageDesigner.png)
 使用pyqt5库进行开发，用Qt设计师软件对界面进行设计，然后通过pyuic5生成界面的python代码，利用qt的信号与槽机制来实现按钮等控件的后台行为。
 ### 视频和弹幕的获取
 纯手工爬虫。解析视频链接，取出对应清晰度的视频链接和音频链接并下载（两者是分开的，如果只是下载视频视频没有声音）。用到requests,urllib、re、json库
