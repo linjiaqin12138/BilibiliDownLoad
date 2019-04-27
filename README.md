@@ -9,6 +9,15 @@
 * 可以选择清晰度进行下载
 * 可以选择保存路径
 
+## 效果展示
+### 主体界面
+![30%](./resources/ImageMainPage.png)
+![30%](./resources/ImageDownLoad.png)
+![30%](./resources/formatTransform.png)
+### 下载结果
+![30%](./resources/result.png)
+![30%](./resources/wordcloud.png)
+> 感谢蔡徐坤先生对开发过程中提供的素材支持 :smile:
 ## 依赖
 * PyQt5
 * moviepy
