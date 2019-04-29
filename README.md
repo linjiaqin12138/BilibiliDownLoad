@@ -15,7 +15,7 @@
 ## 效果展示
 ### 主体界面
 ![30%](./resources/ImageMainPage.png)
-![30%](./resources/Download.png)
+![30%](./resources/Downloading.png)
 ![30%](./resources/ImageDownLoad.png)
 ![30%](./resources/formatTransform.png)
 ### 下载结果
