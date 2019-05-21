@@ -1,4 +1,5 @@
 ﻿import logging
+# 用到的库（有些可能没用到）
 import requests
 import re
 import json
@@ -8,6 +9,7 @@ import os
 from moviepy.editor import *
 from PyQt5.QtCore import QObject,pyqtSignal
 
+# 自定义信号量
 class ProcessSignal(QObject):
     trigger = pyqtSignal(float)
     merge_trigger = pyqtSignal()
@@ -90,6 +92,7 @@ def url_size(url, faker=False, headers={}):
 
 class DownLoader(object):
     processsignal = ProcessSignal()
+    # 提前了解到的关于哔哩哔哩的一些视频信息
     stream_types = [
         {'id': 'flv_p60', 'quality': 116, 'audio_quality': 30280,
          'container': 'FLV', 'video_resolution': '1080p', 'desc': '高清 1080P60'},
@@ -110,13 +113,12 @@ class DownLoader(object):
         {'id': 'mp4', 'quality': 0},
     ]
     def __init__(self,url):
+        # 构造函数
         self.url = url
-        
-        #self.site = Bilibili()
 
     @staticmethod
     def bilibili_headers(referer=None, cookie=None):
-        # a reasonable UA
+        # 请求消息的头部，模拟浏览器的行为访问Bilibili网站，否则访问会被拒绝
         ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
         headers = {'User-Agent': ua}
         if referer is not None:
@@ -126,6 +128,7 @@ class DownLoader(object):
         return headers
     @staticmethod
     def get_content(url, headers={}, decoded=True):
+        # 获取链接的html文件
         logging.debug('get_content: %s' % url)
         data = None
         session = requests.Session()
@@ -139,15 +142,16 @@ class DownLoader(object):
         return data
 
     def prepare(self):
+        # 解析视频链接信息的函数
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
         #获得html源代码
         html_content = self.get_content(self.url, headers=self.bilibili_headers())
-        #视频信息获取
-        initial_state_text = match1(html_content,r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
+        #视频信息获取，视频信息就藏在html的<script>标签内的一个json对象里面
+        initial_state_text = match1(html_content,r'__INITIAL_STATE__=(.*?);\(function\(\)')  
         self.initial_state = json.loads(initial_state_text)
-        playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
+        playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  
         self.playinfo = json.loads(playinfo_text) if playinfo_text else None
-        #视频数目，必须为1否则不能条下载
+        #视频数目，必须为1否则不能下载，要改用批量下载功能去下载
         # TODO 设置界面的提醒视频数目
         pn = self.initial_state['videoData']['videos']
         #视频题目
@@ -159,6 +163,7 @@ class DownLoader(object):
         for i in self.playinfo['data']['accept_quality']:
             if i in (116,80,74,64,48,32,16):#我们只对stream_types里面有的视频质量进行下载
                 qualityIDs.append(i)
+        #可选的视频质量列表
         self.acceptQualitys = [self.stream_qualities[id]['desc'] for id in qualityIDs]
 
         if pn > 1:
@@ -166,11 +171,12 @@ class DownLoader(object):
         #cid用来获取弹幕文件
         p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or '1')
         cid = self.initial_state['videoData']['pages'][p - 1]['cid']
-        
+        # 请求弹幕文件并解码
         response = requests.get('http://comment.bilibili.com/%s.xml' % cid,headers=self.bilibili_headers())
         self.danmaku = response.content.decode()
         
     def startToDownLoad(self,stream_id,output_dir,title):
+        #开始下载
         self.title = title
         #这里解析当前传入的清晰度选项
         qualityIDs = []
@@ -183,29 +189,29 @@ class DownLoader(object):
         # 只能下载dash格式的视频
         if 'dash' in self.playinfo['data']:
             self.dash_streams = {}
-            #audio_size_cache = {} #音频文件
             for video in self.playinfo['data']['dash']['video']:
-                # prefer the latter codecs!
+                # 筛选出用户选择的清晰度
                 if video['id'] != self.currentQuality:
                     continue
                 #这是用户选择的清晰度相应的视频信息
                 s = self.stream_qualities[video['id']] 
-                self.format_id = 'dash-' + s['id']  # prefix
-                self.container = 'mp4'  # enforce MP4 container
-                self.desc = s['desc']
-                self.audio_quality = s['audio_quality']
+                self.format_id = 'dash-' + s['id']  # 清晰度
+                self.container = 'mp4'  # 视频格式定位MP4
+                self.desc = s['desc'] # 
+                self.audio_quality = s['audio_quality'] # 音频质量
                 self.baseurl = video['baseUrl'] # 视频下载的一次性链接
                 # 获得视频的大小
                 self.video_size = url_size(self.baseurl, headers=self.bilibili_headers(referer=self.url))
 
-                # find matching audio track
+                # 获取对应音频质量的音频链接
                 self.audio_baseurl = self.playinfo['data']['dash']['audio'][0]['baseUrl']
                 for audio in self.playinfo['data']['dash']['audio']:
                     if int(audio['id']) == self.audio_quality:
                         self.audio_baseurl = audio['baseUrl']
                         break
-                #audio_size_cache[audio_quality] = url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+                #　音频的大小
                 self.audio_size = url_size(self.audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+                # 音视频总大小
                 self.total_size = int(self.video_size)+int(self.audio_size)
                 #我们需要下载的视频清晰度、格式、视频链接和音频链接和总大小都在这里
                 self.dash_streams[self.format_id] = {'container': self.container, 'quality': self.desc,
@@ -214,19 +220,22 @@ class DownLoader(object):
                 ext = self.dash_streams[self.format_id]['container']
                 total_size = self.dash_streams[self.format_id]['size']
                 self.received = 0
+                # 以二进制形式将音视频写到文件中
                 open_mode = "wb"
-                #is_chunked = True
+                
                 #用来请求视频和音频的header
                 temp_header = self.bilibili_headers(referer = self.url)
                 parts = []
                 self.processsignal.TotalSize(total_size)
                 
+                # 下载音频和视频，一次循环下载视频，一次循环下载音频
                 for i,url in enumerate(urls):
                     filename = '%s[%02d].%s' % (self.title, i, ext)
                     filepath = os.path.join(output_dir, filename)
                     parts.append(filepath)
                     url = url[0]
                     received_chunk = 0
+                    #分段请求视频或音频
                     temp_header['Range'] = 'bytes=' + str(received_chunk) + '-'
                     temp_filepath = filename+".download" 
                     response = urlopen_with_retry(
@@ -239,6 +248,7 @@ class DownLoader(object):
                         while True:
                             buffer = None
                             try:
+                                # 每次请求255字节数据
                                 buffer = response.read(1024 * 256)
                             except socket.timeout:
                                 pass
@@ -247,22 +257,23 @@ class DownLoader(object):
                                     break
                                 elif self.received == total_size:  # Download finished
                                     break
+                            #　写入文件
                             output.write(buffer)
                             received_chunk += len(buffer)
                             self.received += len(buffer)
                             self.percent = round(self.received * 100 / self.total_size  ,1)
+                            # 更新进度条
                             self.processsignal.update(self.percent)
-                            #print(self.percent)
                     os.rename(temp_filepath, filepath)
-                #print("finish")
+                #　完成下载，开始合成
                 self.processsignal.merge()
                 output_filepath = os.path.join(output_dir, self.title+".mp4")
-                #下载完成，合并   
                 audioclip = AudioFileClip(parts[1])
                 videoclip = VideoFileClip(parts[0])
                 videoclip = videoclip.set_audio(audioclip)
                 videoclip.write_videofile(output_filepath)
                 self.processsignal.close_message()
+                #　弹幕提取，制作词云图
                 pattern = r'\"\>(.*?)\<\/d\>'
                 match = re.findall(pattern, self.danmaku)
                 text = ""
@@ -272,16 +283,14 @@ class DownLoader(object):
                 if len(text) > 0:
                     wordcloud = WordCloud(background_color="white",width=1000, height=860, margin=2).generate(text)
                 wordcloud.to_file(os.path.join(output_dir, self.title+".png"))
+                #　删掉原来下载的音视频文件，因为我们已将他们合成导出了
                 os.remove(parts[0])
                 os.remove(parts[1])
                 break
         else:
-            raise VideoFormatError("无法下载链接的视频，格式暂时不支持,请联系我们：https://github.com/linjiaqin12138/BlibiliDownLoad")
+            # TODO 其他类型格式视频的下载
+            raise VideoFormatError("无法下载链接的视频，格式暂时不支持")
            
-        
-
-        #import os
-        #os.system("you-get %s" % self.url)
 
 if __name__=='__main__':
     test = DownLoader("https://www.bilibili.com/video/av48201613")

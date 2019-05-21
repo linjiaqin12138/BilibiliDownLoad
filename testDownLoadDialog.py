@@ -25,11 +25,6 @@ class downloadDialog(QDialog,Ui_Dialog):
         self.Progress.setRange(0,self.TotalSize)
 
 
-
-        
-        
-
-
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
