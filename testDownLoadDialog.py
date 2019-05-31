@@ -1,6 +1,7 @@
 from downloadDialog import *
+import setpage
 from PyQt5.QtWidgets import QDialog,QMainWindow,QApplication,QFileDialog,QErrorMessage
-
+import os
 class downloadDialog(QDialog,Ui_Dialog):
     def __init__(self):
         super(downloadDialog,self).__init__()
@@ -24,6 +25,25 @@ class downloadDialog(QDialog,Ui_Dialog):
         # 设置大小标签
         self.TotalSize = value/1024/1024
         self.Progress.setRange(0,self.TotalSize)
+
+class setpageDialog(QDialog,setpage.Ui_Dialog):
+    path = None
+    def __init__(self):
+        super(setpageDialog,self).__init__()
+        self.setupUi(self)
+        self.RadioLow.setChecked(True)
+        self.comboBox.clear()
+        cwd = os.getcwd()
+        self.lineEdit.setText(cwd)
+        self.pBSetPath.clicked.connect(self.setPath)
+
+    def setPath(self):
+        self.path = QFileDialog.getExistingDirectory()
+        self.lineEdit.setText(self.path)
+
+    def get_path(self):
+        return self.path
+        
 
 
 if __name__ == '__main__':
