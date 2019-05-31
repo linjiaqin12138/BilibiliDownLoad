@@ -15,6 +15,9 @@ class ProcessSignal(QObject):
     merge_trigger = pyqtSignal()
     close_trigger = pyqtSignal()
     total_size = pyqtSignal(int)
+    title = pyqtSignal(str)
+    def updatetitle(self,title):
+        self.title.emit(title)
     def update(self,value):
         self.trigger.emit(value)
     def merge(self):
@@ -213,7 +216,7 @@ class DownLoader(object):
                 if len(text) > 0:
                     wordcloud = WordCloud(background_color="white",width=1000, height=860, margin=2).generate(text)
                     wordcloud.to_file(os.path.join(output_dir, self.title+str(i)+".png"))
-    def StartToDOwnLoadMore(self,stream_id,output_dir,videoIndexAndtitleList):
+    def StartToDOwnLoadMore(self,stream_id,output_dir,videoIndexAndtitleList,optionHigh=False):
         # 一条条视频链接进行解析，先清空前面保留的弹幕
         self.danmaku.clear()
         #https://www.bilibili.com/video/av19397094/?p=2
@@ -221,12 +224,13 @@ class DownLoader(object):
         for idx,title in videoIndexAndtitleList:
             purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, idx+1)
             self.url = purl
-            self.prepare()
-            self.startToDOwnLoadOne(stream_id,output_dir,title)
+            self.prepare(2)
+            self.processsignal.updatetitle(title)
+            self.startToDownLoadOne(stream_id,output_dir,title,optionHigh)
 
 
     
-    def startToDownLoadOne(self,stream_id,output_dir,title):
+    def startToDownLoadOne(self,stream_id,output_dir,title,optionHigh = False):
         #这里解析当前传入的清晰度选项
         qualityIDs = []
         for i in self.playinfo['data']['accept_quality']:
@@ -255,7 +259,7 @@ class DownLoader(object):
             self.received = 0
             self.processsignal.TotalSize(total_size)
             for i,url in enumerate(urls):
-                filename = '%s[%02d].%s' % (self.title, i, self.streams[format_id]['container'])
+                filename = '%s[%02d].%s' % (title, i, self.streams[format_id]['container'])
                 filepath = os.path.join(output_dir, filename)
                 parts.append(filepath)
                 # 当前视频片段获取的大小
@@ -293,8 +297,9 @@ class DownLoader(object):
                 os.rename(temp_filepath, filepath)
                 videoclip = VideoFileClip(parts[i])
                 video_parts.append(videoclip)
+            self.processsignal.merge()
             final_clip = concatenate_videoclips(video_parts)
-            final_clip.to_videofile(os.path.join(output_dir,self.title+".mp4"))
+            final_clip.to_videofile(os.path.join(output_dir,title+".mp4"))
             for eachvideo in video_parts:
                 eachvideo.close()
             final_clip.close()
@@ -343,7 +348,7 @@ class DownLoader(object):
             # 下载音频和视频，一次循环下载视频，一次循环下载音频
             parts = []
             for i,url in enumerate(urls):
-                filename = '%s[%02d].%s' % (self.title, i, ext)
+                filename = '%s[%02d].%s' % (title, i, ext)
                 filepath = os.path.join(output_dir, filename)
                 parts.append(filepath)
                 url = url[0]
@@ -379,7 +384,7 @@ class DownLoader(object):
                         self.processsignal.update(self.percent)
                 os.rename(temp_filepath, filepath)
             self.processsignal.merge()
-            output_filepath = os.path.join(output_dir, self.title+".mp4")
+            output_filepath = os.path.join(output_dir, title+".mp4")
             audioclip = AudioFileClip(parts[1])
             videoclip = VideoFileClip(parts[0])
             videoclip = videoclip.set_audio(audioclip)

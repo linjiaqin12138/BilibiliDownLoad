@@ -1,13 +1,10 @@
 # 主函数文件，程序由这个文件开始运行
 from PyQt5 import QtWidgets,QtGui
-
 # 用到的Qt相关的库
 from PyQt5.QtWidgets import QDialog,QMainWindow,QApplication,QFileDialog,QErrorMessage 
-
 from PyQt5.QtGui import QPixmap
 # 导入由QT的pyuic5命令生成的主界面类
 from bilibili import Ui_BilibiliVideoDownLoad
-
 # 下载过程中的进度条窗口界面类
 from testDownLoadDialog import *
 # 多线程库
@@ -26,7 +23,7 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
         # 下载进度窗口对象
         self.Downloading = downloadDialog()
         # 批量下载设置窗口
-        self.setPage = setpageDialog()
+        self.setPage = setpageDialog(self)
         # 按钮等控件绑定槽函数
         # 下载单个视频的按钮
         self.pBDownLoadOne.clicked.connect(self.changeToDownLoadOnePage)
@@ -45,7 +42,7 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
         # 下载单个视频页面的下载按钮
         self.pBStartToDownLoad.clicked.connect(self.StartToDownLoadOne)
         # 批量下载页面下载按钮
-        self.pBStartToDownLoadMore.clicked.connect(self.setPage.show)
+        self.pBStartToDownLoadMore.clicked.connect(self.showSetPage)
         
         # 隐藏这个标签，暂时没有用到不管它
         self.lbParserUrl.hide()
@@ -61,6 +58,7 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
     def ModifyPath(self):
         # 路径设置函数
         path = QFileDialog.getExistingDirectory()
+        #self.lEUrlInput.text()
         self.lbCurrentPath.setText(path)
 
     def changeToDownLoadOnePage(self):
@@ -110,6 +108,7 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
             self.downloader.processsignal.trigger.connect(self.Downloading.slotFun)
             self.downloader.processsignal.merge_trigger.connect(self.Downloading.merge)
             self.downloader.processsignal.close_trigger.connect(self.Downloading.CanbeClose)
+            self.downloader.processsignal.title.connect(self.Downloading.settitle)
             #进行下载的解析
             self.downloader.prepare(self.stackedWidget.currentIndex())
         # 处理异常情况并弹出窗口提示
@@ -170,6 +169,12 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
         t.start()
         # 显示下载界面
         self.Downloading.show()
+    def showSetPage(self):
+        qualitysList = self.downloader.acceptQualitys
+        if qualitysList is not None:
+            for i in range(len(qualitysList)):
+                self.setPage.comboBox.insertItem(i,qualitysList[i])
+        self.setPage.show()
     def StartToDownLoadMore(self):
         # 读取设置页面选项
         output_dir = self.setPage.get_path()
@@ -179,9 +184,9 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
         videoIndexAndtitleList = []
         for i,[cBox,lEdit] in enumerate(self.videoselectlist):
             if cBox.isChecked():
-                videoIndexAndtitleList.append([i,lEdit.currentText()])
-                print(lEdit.currentText())
-        t = threading.Thread(target=self.downloader.StartToDOwnLoadMore,args=(stream_id,output_dir,videoIndexAndtitleList))
+                videoIndexAndtitleList.append([i,lEdit.text()])
+                print(lEdit.text())
+        t = threading.Thread(target=self.downloader.StartToDOwnLoadMore,args=(stream_id,output_dir,videoIndexAndtitleList,optionHigh))
         t.start()
         self.Downloading.show()
 # 程序入口

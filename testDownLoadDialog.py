@@ -8,12 +8,12 @@ class downloadDialog(QDialog,Ui_Dialog):
         self.setupUi(self)
         #进度条数值设为0
         self.Progress.setValue(0)
-        
-        
     def slotFun(self,value):
         # 更新进度条数值
         self.Progress.setValue(value)
-
+    def settitle(self,title):
+        self.lbDownLoading.setText("下载中")
+        self.lbCur.setText("当前下载 "+title)
     def merge(self):
         self.lbDownLoading.setText("下载完成")
         self.lbCur.setText("正在进行格式转换，这需要一定的时间")
@@ -28,7 +28,7 @@ class downloadDialog(QDialog,Ui_Dialog):
 
 class setpageDialog(QDialog,setpage.Ui_Dialog):
     path = None
-    def __init__(self):
+    def __init__(self,mainWindow):
         super(setpageDialog,self).__init__()
         self.setupUi(self)
         self.RadioLow.setChecked(True)
@@ -36,10 +36,11 @@ class setpageDialog(QDialog,setpage.Ui_Dialog):
         cwd = os.getcwd()
         self.lineEdit.setText(cwd)
         self.pBSetPath.clicked.connect(self.setPath)
-
+        self.pBOk.clicked.connect(mainWindow.StartToDownLoadMore)
     def setPath(self):
         self.path = QFileDialog.getExistingDirectory()
         self.lineEdit.setText(self.path)
+    
 
     def get_path(self):
         return self.path
