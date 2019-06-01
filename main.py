@@ -20,6 +20,7 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
         super(MainWindow,self).__init__()
         self.setupUi(self)
         self.show()
+        self.stackedWidget.setCurrentIndex(0)
         # 下载进度窗口对象
         self.Downloading = downloadDialog()
         # 批量下载设置窗口
