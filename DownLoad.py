@@ -222,7 +222,7 @@ class DownLoader(object):
                         self.playinfos.append(api_playinfo)
 
         if self.pn > 1:
-            if page==1 and not(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)')):
+            if page==1 and not(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)')) and self.sort=='video':
                 raise MultiplePageError("链接中包含多个视频，请使用只有一个视频的链接或在批量下载页面进行下载")
             else:
                 pass
@@ -257,7 +257,7 @@ class DownLoader(object):
             text += (string+" ")
         from wordcloud import WordCloud
         if len(text) > 0:
-            wordcloud = WordCloud(background_color="white",width=1000, height=860, margin=2).generate(text)
+            wordcloud = WordCloud(font_path="C:/WINDOWS/Fonts/SIMHEI.TTF",background_color="white",width=1000, height=860, margin=2).generate(text)
             wordcloud.to_file(os.path.join(output_dir, title+".png"))
     def DataRetrive(self,streamsDict,format_id,output_dir,title,isDash = False):
         urls = streamsDict[format_id]['src']

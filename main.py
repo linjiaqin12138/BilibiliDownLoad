@@ -2,7 +2,7 @@
 from PyQt5 import QtWidgets,QtGui
 # 用到的Qt相关的库
 from PyQt5.QtWidgets import QDialog,QMainWindow,QApplication,QFileDialog,QErrorMessage 
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 # 导入由QT的pyuic5命令生成的主界面类
 from bilibili import Ui_BilibiliVideoDownLoad
 # 下载过程中的进度条窗口界面类
@@ -19,6 +19,8 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
     def __init__(self):  
         super(MainWindow,self).__init__()
         self.setupUi(self)
+        self.setWindowTitle('Bilibili下载工具')
+        self.setWindowIcon(QIcon("./resources/icon.png"))
         self.show()
         self.stackedWidget.setCurrentIndex(0)
         # 下载进度窗口对象
@@ -71,7 +73,7 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
 
     def changeToMainPage(self):
         # 切换回主页面
-        #print(self.stackedWidget.currentIndex)
+       
         if self.stackedWidget.currentIndex() == 1:
             # 下载视频页面的一些遗留的信息清除掉
             self.cBQuality.clear()
@@ -88,7 +90,6 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
             self.videoList.setWidget(self.scrollAreaWidgetContents)
             self.lEUrlMore.clear()
         self.stackedWidget.setCurrentIndex(0)
-        
         
 
     def parserUrl(self):
@@ -177,6 +178,7 @@ class MainWindow(QMainWindow,Ui_BilibiliVideoDownLoad):
                 self.setPage.comboBox.insertItem(i,qualitysList[i])
         self.setPage.show()
     def StartToDownLoadMore(self):
+        self.setPage.close()
         # 读取设置页面选项
         output_dir = self.setPage.get_path()
         stream_id = self.setPage.comboBox.currentText()

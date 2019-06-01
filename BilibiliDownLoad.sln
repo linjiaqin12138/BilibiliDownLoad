@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "BilibiliDownLoad", "BilibiliDownLoad.pyproj", "{A48A5DED-8C58-49B4-A6AE-239E3BDA1A7F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A48A5DED-8C58-49B4-A6AE-239E3BDA1A7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A48A5DED-8C58-49B4-A6AE-239E3BDA1A7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {36F18361-6B4B-4042-8ADA-5FED6843465E}
+	EndGlobalSection
+EndGlobal
