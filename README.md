@@ -72,3 +72,28 @@ wordcloud = WordCloud(font_path="C:/WINDOWS/Fonts/SIMHEI.TTF",background_color="
 3. 实现对除dash格式的视频下载
 4. 用pyinstaller等工具打包成exe可执行文件
 5. 程序图标和开启动画的制作
+
+---
+
+# 6月1日
+
+截止到6月1号完成的工作如下
+
+- 批量下载功能的实现
+- 实现对/bangumi/ep类型的链接的视频的下载
+- 除了dash格式外，对durl格式的视频也能下载
+- 程序图标和开启动画
+
+未完成：可执行文件的打包，复杂且意义不大，不做了
+
+## 新成果展示：
+
+### 对含有多个视频的链接进行解析，并选择性进行批量下载
+![30%](./resources/批量下载页面.jpg)
+![30%](./resources/链接解析.jpg)
+![30%](./resources/设置.jpg)
+
+### 开启动画
+![30%](./resources/logo.png)
+
+
