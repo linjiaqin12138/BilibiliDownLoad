@@ -44,7 +44,7 @@ windows 下双击main.py文件或通过VSCode之类的IDE运行main.py
 ## 注意
 * 有些链接的视频不能下载，包括播放列表有多个视频的链接，视频格式不为dash的链接等，但大部分链接是可以的。如果链接的视频不能下载会有提示不能下载的原因。
 * 使用链接为https://bilibili.com/av...的链接，其中省略号为视频的id，比如https://www.bilibili.com/video/av34337039 链接后面可能会有其他的字符比如https://www.bilibili.com/video/av50379490/?spm_id_from=333.334.b_63686965665f7265636f6d6d656e64.16 我们只取前面的https://www.bilibili.com/video/av50379490/
-* 很多视频名称很长，**解析出来视频名称后可以在输入框中修改视频的名称**
+* 很多视频名称很长，**解析出来视频名称后可以在输入框中修改视频的名称**，在批量下载页面中解析出来视频信息之后也可以在输入框中修改自己想要的视频名称。
 * 词云字体用的是C:/WINDOWS/Fonts/SIMHEI.TTF，如果你的电脑对应路径没有这个字体就换一个中文字体，在DownLoad.py文件中对
 ```python
 wordcloud = WordCloud(font_path="C:/WINDOWS/Fonts/SIMHEI.TTF",background_color="white",width=1000, height=860, margin=2).generate(text)
@@ -108,10 +108,11 @@ wordcloud = WordCloud(font_path="C:/WINDOWS/Fonts/SIMHEI.TTF",background_color="
 文档地址：https://www.riverbankcomputing.com/static/Docs/PyQt5/
 由于PyQt5的接口跟C++Qt的接口差不多，所以遇到这种情况的时候我们参考的是C++Qt的文档。
 3. 上一个版本的代码架构不整洁，不易于维护，这次在加入对bangumi链接的解析下载功能的时候为了能够服用下载video/av链接视频的一些功能的代码，对爬虫库的架构进行了比较大的调整，进一步模块化。
-## 目前存在的bug，请注意避免
+## 目前存在的bug，请注意避免，来日再fix
 1. 下载过程中关闭进度条窗口并不会终止下载过程，若要终止下载过程要在终端通过Ctrl+C的方式强制关闭，然后到视频保存的路径文件夹里删除下载过程中产生的文件
 2. 当一个视频还在下载的时候解析另一个视频链接并下载另一个视频。在两个下载进程同时运行的时候，会公用同一个进度条窗口，所以下载进度条进度会跳变，交替显示两个下载任务的进度
 3. 下载单个视频功能忘了设置默认路径，所以如果你没有设置保存路径，保存路径显示为空白的话，会出错
+4. 如果视频名称中含有斜杠"/"，代码会误认为是系统路径，最终报错找不到路径，可以在视频名称的输入框把斜杠删除
 
 # 关于pyqt5的介绍
 pyqt5是一个跨平台的C++库，是通过打包工具对C++代码进行编译形成python可以调用的动态库。pyqt5并不是Qt官方推出的，Qt官方维护的是C++的Qt库，除此之外Qt官方推出了python版本Qt库PySide，PySide的推出比pyQt晚很多，但也有些年头了。由于先前PySide项目不是很完善，又缺乏文档，所以其存在感不高。关于PyQt5的文档详见https://www.riverbankcomputing.com/software/pyqt/ ，并不是很完善。
