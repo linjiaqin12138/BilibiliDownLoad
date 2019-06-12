@@ -317,22 +317,34 @@ class DownLoader(object):
                 videoclip = VideoFileClip(parts[i])
                 video_parts.append(videoclip)
         self.processsignal.merge()
-        if isDash:
+        if isDash:# 这个视频是dash格式的视频，需要融合音频和视频
+	    #定义导出文件名称路径
             output_filepath = os.path.join(output_dir, title+".mp4")
+	　　　　#使用moviepy来融合音视频
+	    #音频部分
             audioclip = AudioFileClip(parts[1])
+	　　  #视频部分
             videoclip = VideoFileClip(parts[0])
+	    #将音频插入到视频的音轨上
             videoclip = videoclip.set_audio(audioclip)
+	    # 导出
             videoclip.write_videofile(output_filepath)
+	    # 释放内存
             audioclip.close()
             videoclip.close()
+	    # qt信号更新窗口
             self.processsignal.close_message()
+	    # 下载弹幕文件并生成弹幕
             self.DownLoaddanmaku(output_dir,title)
             #　删掉原来下载的音视频文件，因为我们已将他们合成导出了
             os.remove(parts[0])
             os.remove(parts[1])
-        else:
+        else: # durl格式视频，将多个片段视频进行拼接
+	    #　video_parts列表中保存了视频片段视频对象，直接用moviepy中concatenate_videoclips拼接
             final_clip = concatenate_videoclips(video_parts)
+	    #　导出
             final_clip.to_videofile(os.path.join(output_dir,title+".mp4"))
+	    # 释放内存
             for eachvideo in video_parts:
                 eachvideo.close()
             final_clip.close()
