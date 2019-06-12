@@ -150,7 +150,6 @@ class DownLoader(object):
             raise
         else:
             data = response.text
-
         return data
     # 解析链接，获得视频数量、视频标题、视频清晰度、弹幕文件链接，page是软件页面
     def prepare(self,page):
@@ -257,7 +256,7 @@ class DownLoader(object):
             text += (string+" ")
         from wordcloud import WordCloud
         if len(text) > 0:
-            wordcloud = WordCloud(font_path="C:/WINDOWS/Fonts/SIMHEI.TTF",background_color="white",width=1000, height=860, margin=2).generate(text)
+            wordcloud = WordCloud(font_path="/usr/share/fonts/microsoftFonts/msyh.ttf",background_color="white",width=1000, height=860, margin=2).generate(text)
             wordcloud.to_file(os.path.join(output_dir, title+".png"))
     def DataRetrive(self,streamsDict,format_id,output_dir,title,isDash = False):
         urls = streamsDict[format_id]['src']
