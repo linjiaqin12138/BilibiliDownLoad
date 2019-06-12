@@ -109,7 +109,6 @@ class DownLoader(object):
          'container': 'FLV', 'video_resolution': '480p', 'desc': '清晰 480P'},
         {'id': 'flv360', 'quality': 16, 'audio_quality': 30216,
          'container': 'FLV', 'video_resolution': '360p', 'desc': '流畅 360P'},
-        # 'quality': 15?
         {'id': 'mp4', 'quality': 0},
     ]
     def __init__(self,url):
@@ -290,7 +289,7 @@ class DownLoader(object):
                 while True:
                     buffer = None
                     try:
-                        # 每次请求255字节数据
+                        # 每次请求256字节数据
                         buffer = response.read(1024 * 256)
                     except socket.timeout:
                         pass
@@ -514,4 +513,4 @@ class DownLoader(object):
 
 if __name__=='__main__':
     test = DownLoader("https://www.bilibili.com/video/av48201613")
-    test = DownLoader("")
+    
